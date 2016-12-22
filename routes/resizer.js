@@ -5,11 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var request = require('request');
-fs.access(imagesFolder, fs.constants.R_OK, function(err){
-	if (err) {
-		fs.mkdir(imagesFolder);
-	}
-});
+
 
 function createOptions(query){
 	return options = {
@@ -22,10 +18,15 @@ function createOptions(query){
 }
 
 function getLocalCopyOfSourceImage(options, imagesFolder){
+	fs.access(imagesFolder, "R_OK", function(err){
+		if (err) {
+			fs.mkdirSync(imagesFolder);
+		}
+	});
 	return new Promise(
 		function(resolve, reject) {
 			var src = options.src, localFilePath = imagesFolder + md5(src) + path.extname(src);
-			fs.access(localFilePath, fs.constants.R_OK, function(err){
+			fs.access(localFilePath, "R_OK", function(err){
 				if (!err) {
 					resolve(localFilePath)
 				} else {
