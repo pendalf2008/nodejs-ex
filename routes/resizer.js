@@ -1,44 +1,13 @@
 var express = require('express');
-var router = express.Router();
 var Jimp = require("jimp");
 var md5 = require('md5');
 var http = require('http');
-var imagesFolder = "public/images/";
+var imagesFolder = "images/";
 var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var request = require('request');
-
-router.get('/', function (req, res, next) {
-	var options = createOptions(req.query);
-	getLocalCopyOfSourceImage(options, imagesFolder).then(function(filePath){
-		var croppedFilePath = imagesFolder + md5(req.originalUrl) + path.extname(options.src);
-		Jimp.read(filePath, function (err, lenna) {
-			if (err) throw err;
-			var jimpObj = lenna;
-			fs.readFile(croppedFilePath, function(err, data){
-				if (!err) {
-					res.contentType(jimpObj._originalMime);
-					res.end(data, 'binary');
-				} else {
-					jimpObj.resize(options.width, Jimp.AUTO)
-						.quality(options.quality)
-						.crop(0, 0, options.cropWidth, options.cropHeight)
-						.write(croppedFilePath)
-						.getBuffer(Jimp.AUTO, function (err, result) {
-							res.contentType(jimpObj._originalMime);
-							res.end(result, 'binary');
-						})
-				}
-			});
-
-		});
-
-	}, function(){
-		res.sendStatus(404);
-	});
-
-});
+fs.mkdir(imagesFolder);
 
 function createOptions(query){
 	return options = {
@@ -73,4 +42,33 @@ function getLocalCopyOfSourceImage(options, imagesFolder){
 	);
 }
 
-module.exports = router;
+module.exports.route = function (req, res, next) {
+	var options = createOptions(req.query);
+	getLocalCopyOfSourceImage(options, imagesFolder).then(function(filePath){
+		var croppedFilePath = imagesFolder + md5(req.originalUrl) + path.extname(options.src);
+		Jimp.read(filePath, function (err, lenna) {
+			if (err) throw err;
+			var jimpObj = lenna;
+			fs.readFile(croppedFilePath, function(err, data){
+				if (!err) {
+					res.contentType(jimpObj._originalMime);
+					res.end(data, 'binary');
+				} else {
+					jimpObj.resize(options.width, Jimp.AUTO)
+						.quality(options.quality)
+						.crop(0, 0, options.cropWidth, options.cropHeight)
+						.write(croppedFilePath)
+						.getBuffer(Jimp.AUTO, function (err, result) {
+							res.contentType(jimpObj._originalMime);
+							res.end(result, 'binary');
+						})
+				}
+			});
+
+		});
+
+	}, function(){
+		res.sendStatus(404);
+	});
+
+};

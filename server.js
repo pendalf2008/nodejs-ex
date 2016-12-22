@@ -77,7 +77,9 @@ app.get('/', function (req, res) {
   }
 });
 
-app.use('/resizer', resizer);
+app.get('/resizer', function (req, res) {
+  resizer.route(req, res)
+});
 
 app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
