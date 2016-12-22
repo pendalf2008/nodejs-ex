@@ -1,7 +1,5 @@
-var express = require('express');
 var Jimp = require("jimp");
 var md5 = require('md5');
-var http = require('http');
 var imagesFolder = "images/";
 var fs = require('fs');
 var path = require('path');
