@@ -3,6 +3,7 @@ var express = require('express'),
     fs      = require('fs'),
     app     = express(),
     eps     = require('ejs'),
+    resizer = require('./routes/resizer'),
     morgan  = require('morgan');
 
 Object.assign=require('object-assign')
@@ -75,6 +76,8 @@ app.get('/', function (req, res) {
     res.render('index.html', { pageCountMessage : null});
   }
 });
+
+app.use('/resizer', resizer);
 
 app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
