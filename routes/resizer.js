@@ -7,7 +7,11 @@ var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var request = require('request');
-fs.mkdir(imagesFolder);
+fs.access(imagesFolder, fs.constants.R_OK, function(err){
+	if (err) {
+		fs.mkdir(imagesFolder);
+	}
+});
 
 function createOptions(query){
 	return options = {
